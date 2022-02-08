@@ -3,7 +3,7 @@ module Timetrap
     extend self
 
     XDG_CONFIG_HOME = ENV['XDG_CONFIG_HOME'] || File.join(ENV['HOME'], '.config')
-    XDG_DATA_HOME = ENV['XDG_CONFIG_HOME'] || File.join(ENV['HOME'], '.local', 'share')
+    XDG_DATA_HOME = ENV['XDG_DATA_HOME'] || File.join(ENV['HOME'], '.local', 'share')
 
     TIMETRAP_PATH_CONFIG = File.join(XDG_CONFIG_HOME, 'timetrap')
     TIMETRAP_PATH_DATA = File.join(XDG_DATA_HOME, 'timetrap')
