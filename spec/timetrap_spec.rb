@@ -102,8 +102,8 @@ describe Timetrap do
       describe 'config' do
         it "should write a config file" do
           FakeFS do
-            FileUtils.mkdir_p(ENV['HOME'])
-            config_file = ENV['HOME'] + '/.timetrap.yml'
+            FileUtils.mkdir_p(Timetrap::Config::TIMETRAP_PATH_CONFIG)
+            config_file = Timetrap::Config::TIMETRAP_CONFIG_FILE
             FileUtils.rm(config_file) if File.exist? config_file
             expect(File.exist?(config_file)).to be_falsey
             invoke "configure"
@@ -114,7 +114,7 @@ describe Timetrap do
         it "should describe config file" do
           FakeFS do
             invoke "configure"
-            expect($stdout.string).to eq "Config file is at \"#{ENV['HOME']}/.timetrap.yml\"\n"
+            expect($stdout.string).to eq "Config file is at \"#{Timetrap::Config::TIMETRAP_CONFIG_FILE}\"\n"
           end
         end
       end

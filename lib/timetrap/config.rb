@@ -1,7 +1,18 @@
 module Timetrap
   module Config
     extend self
-    PATH = ENV['TIMETRAP_CONFIG_FILE'] || File.join(ENV['HOME'], '.timetrap.yml')
+
+    XDG_CONFIG_HOME = ENV['XDG_CONFIG_HOME'] || File.join(ENV['HOME'], '.config')
+    XDG_DATA_HOME = ENV['XDG_CONFIG_HOME'] || File.join(ENV['HOME'], '.local', 'share')
+
+    TIMETRAP_PATH_CONFIG = File.join(XDG_CONFIG_HOME, 'timetrap')
+    TIMETRAP_PATH_DATA = File.join(XDG_DATA_HOME, 'timetrap')
+
+    TIMETRAP_PATH_AUTOSHEETS = ENV['TIMETRAP_PATH_AUTOSHEETS'] || File.join(TIMETRAP_PATH_CONFIG, 'auto_sheets')
+    TIMETRAP_PATH_FORMATTERS = ENV['TIMETRAP_PATH_FORMATTERS'] || File.join(TIMETRAP_PATH_CONFIG, 'formatters')
+
+    TIMETRAP_DATABASE_FILE = ENV['TIMETRAP_DATABASE_FILE'] || File.join(TIMETRAP_PATH_DATA, 'timetrap.db')
+    TIMETRAP_CONFIG_FILE = ENV['TIMETRAP_CONFIG_FILE'] || File.join(TIMETRAP_PATH_CONFIG, 'config.yml')
 
     # Application defaults.
     #
@@ -12,14 +23,14 @@ module Timetrap
     def defaults
       {
         # Path to the sqlite db
-        'database_file' => "#{ENV['HOME']}/.timetrap.db",
+        'database_file' => TIMETRAP_DATABASE_FILE,
         # Unit of time for rounding (-r) in seconds
         'round_in_seconds' => 900,
         # delimiter used when appending notes with `t edit --append`
         'append_notes_delimiter' => ' ',
         # an array of directories to search for user defined fomatter classes
         'formatter_search_paths' => [
-          "#{ENV['HOME']}/.timetrap/formatters"
+          TIMETRAP_PATH_FORMATTERS
         ],
         # formatter to use when display is invoked without a --format option
         'default_formatter' => 'text',
@@ -27,7 +38,7 @@ module Timetrap
         'auto_sheet' => 'dotfiles',
         # an array of directories to search for user defined auto_sheet classes
         'auto_sheet_search_paths' => [
-          "#{ENV['HOME']}/.timetrap/auto_sheets"
+          TIMETRAP_PATH_AUTOSHEETS
         ],
         # the default command to when you run `t`.  default to printing usage.
         'default_command' => nil,
@@ -44,7 +55,7 @@ module Timetrap
     end
 
     def [](key)
-      overrides = File.exist?(PATH) ? YAML.load(erb_render(File.read(PATH))) : {}
+      overrides = File.exist?(TIMETRAP_CONFIG_FILE) ? YAML.load(erb_render(File.read(TIMETRAP_CONFIG_FILE))) : {}
       defaults.merge(overrides)[key]
     rescue => e
       warn "invalid config file"
@@ -57,12 +68,12 @@ module Timetrap
     end
 
     def configure!
-      configs = if File.exist?(PATH)
-        defaults.merge(YAML.load_file(PATH))
+      configs = if File.exist?(TIMETRAP_CONFIG_FILE)
+        defaults.merge(YAML.load_file(TIMETRAP_CONFIG_FILE))
       else
         defaults
       end
-      File.open(PATH, 'w') do |fh|
+      File.open(TIMETRAP_CONFIG_FILE, 'w') do |fh|
         fh.puts(configs.to_yaml)
       end
     end

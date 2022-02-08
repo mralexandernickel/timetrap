@@ -214,7 +214,7 @@ COMMAND is one of:
 
     def configure
       Config.configure!
-      puts "Config file is at #{Config::PATH.inspect}"
+      puts "Config file is at #{Config::TIMETRAP_CONFIG_FILE.inspect}"
     end
 
     def edit
